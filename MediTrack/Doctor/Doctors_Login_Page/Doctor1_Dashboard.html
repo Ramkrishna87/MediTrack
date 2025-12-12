@@ -1,0 +1,394 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MediTrack - Doctor Dashboard</title> -->
+
+  <!-- Icons / Charts -->
+  <!-- <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
+
+  <!-- Firebase (compat) - required for full feature set. Keep these BEFORE the doctor_dashboard.js script. -->
+  <!-- <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script> -->
+
+  <!-- Optional: html5-qrcode for camera-based QR scanning -->
+  <!-- <script src="https://unpkg.com/html5-qrcode@2.3.7/minified/html5-qrcode.min.js"></script>
+
+  <link rel="stylesheet" href="Doctor1_Dashboard.css" />
+  <style>.hidden{display:none}</style>
+</head>
+<body>
+  <div class="dashboard-container"> -->
+    <!-- Sidebar -->
+    <!-- <aside class="sidebar">
+      <div class="logo">⚕️ MediTrack</div>
+      <nav>
+        <ul>
+          <li class="active" data-view="dashboard">🏠 Dashboard</li>
+          <li data-view="chat">💬 Chat</li>
+          <li data-view="schedule">📅 Schedule</li>
+          <li data-view="reports">📊 Reports</li>
+          <hr>
+          <li data-view="documents">📂 Documents</li>
+          <li data-view="patients">👥 Patients</li>
+          <li data-view="billing">💳 Billing</li>
+          <li id="logoutBtn" style="margin-top:18px;cursor:pointer;">🔓 Logout</li>
+        </ul>
+        <div class="sidebar-indicator"></div>
+      </nav>
+    </aside> -->
+
+    <!-- Main content -->
+    <!-- <div class="main-content"> -->
+      <!-- Topbar -->
+      <!-- <div class="topbar">
+        <div class="search">
+          <input type="text" placeholder="Search..." id="topSearch" />
+        </div>
+
+        <div class="actions" style="display:flex;align-items:center;gap:12px"> -->
+          <!-- notifications -->
+          <!-- <div class="dropdown" style="position:relative">
+            <i class="ri-notification-3-line" title="Notifications" style="font-size:20px;cursor:pointer"></i>
+            <div class="dropdown-menu" aria-live="polite" style="min-width:320px;right:0;top:36px;padding:8px;">
+              <p class="muted">Loading notifications…</p>
+            </div>
+          </div> -->
+
+          <!-- injected tools go here -->
+          <!-- <span id="userMenu" style="display:flex;align-items:center;gap:10px">
+            <i class="ri-moon-line" id="darkToggle" title="Toggle theme" style="font-size:20px;cursor:pointer"></i>
+            <i class="ri-user-line" id="topProfile" title="Profile" style="font-size:20px;cursor:pointer"></i>
+          </span>
+        </div>
+      </div> -->
+
+      <!-- Dashboard view -->
+      <!-- <main id="view-dashboard"> -->
+        <!-- Welcome Section -->
+        <!-- <section class="welcome" id="welcomeSection">
+          <div class="welcome-text">
+            <h2>Good day, Doctor</h2>
+            <p id="welcomeSubtitle">Here’s your summary for today</p>
+          </div>
+          <div class="welcome-gif">
+            <video autoplay loop muted playsinline style="width:120px;height:90px;object-fit:cover;border-radius:8px;">
+              <source src="../assets/animations/Doc and Patient.webm" type="video/webm" />
+            </video>
+          </div>
+        </section> -->
+
+        <!-- Stats Section -->
+        <!-- <section class="stats" aria-live="polite">
+          <div class="card green">
+            <h3 id="stat-online">—</h3>
+            <p>🟢 Total Patients</p>
+          </div>
+          <div class="card red">
+            <h3 id="stat-offline">—</h3>
+            <p>🔴 Offline / Inactive</p>
+          </div>
+          <div class="card blue">
+            <h3 id="stat-today-appt">—</h3>
+            <p>📅 Appointments Today</p>
+          </div>
+          <div class="card purple">
+            <h3 id="stat-prescribed">—</h3>
+            <p>💊 Total Prescriptions</p>
+          </div>
+        </section> -->
+
+        <!-- Widgets -->
+        <!-- <div class="widgets">
+          <div class="card upcoming-appointments">
+            <h3>Upcoming Appointments</h3>
+            <table>
+              <thead>
+                <tr><th>Patient</th><th>Date</th><th>Time</th><th></th></tr>
+              </thead>
+              <tbody id="upcomingApptBody">
+                <tr><td colspan="4" class="muted">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card quick-actions">
+            <h3>Quick Actions</h3>
+            <button id="btnAddPatient" class="btn">+ Add Patient</button>
+            <button id="btnNewAppt" class="btn ghost">+ New Appointment</button>
+            <div style="margin-top:12px">
+              <button id="btnScanQR" class="btn-gold-small">Scan QR</button>
+              <button id="btnSettings" class="btn-outline-gold">Settings</button>
+            </div>
+          </div>
+
+          <div class="card activity">
+            <h3>Recent Activity</h3>
+            <ul id="activityList" style="margin-top:8px">
+              <li class="muted">Loading…</li>
+            </ul>
+          </div>
+        </div> -->
+
+        <!-- Doctors Section -->
+        <!-- <section class="doctors">
+          <h3 class="section-title">👨‍⚕️ Doctors on Duty</h3>
+          <div class="doctor-grid" id="doctorsGrid"></div>
+        </section> -->
+
+        <!-- Patients list (populated by JS) -->
+        <!-- <section class="patients" style="margin-top:18px">
+          <h3 class="section-title">👥 Patients</h3>
+          <div id="patientsList"></div>
+        </section> -->
+
+        <!-- Reports/Charts -->
+        <!-- <section class="reports" style="margin-top:18px">
+          <h3 class="section-title">📊 Reports & Analytics</h3>
+          <div class="report-grid">
+            <div class="report-card">
+              <canvas id="patientsChart"></canvas>
+            </div>
+            <div class="report-card">
+              <canvas id="appointmentsChart"></canvas>
+            </div>
+          </div>
+        </section>
+      </main> -->
+
+      <!-- Other views placeholders (for nav switching if needed) -->
+      <!-- <main id="view-chat" class="hidden"></main>
+      <main id="view-schedule" class="hidden"></main>
+      <main id="view-patients" class="hidden"></main>
+      <main id="view-reports" class="hidden"></main>
+    </div>
+  </div>
+
+  <footer style="position:fixed;left:260px;bottom:8px;font-size:12px;color:rgba(0,0,0,0.45)">
+    MediTrack • Doctor Panel
+  </footer>
+
+  <script src="Doctor1_Dashboard.js" defer></script>
+</body>
+</html> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MediTrack - Doctor Dashboard</title>
+
+  <!-- Icons / Charts -->
+  <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Firebase (compat) - required for full feature set. Keep these BEFORE the doctor_dashboard.js script. -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+
+  <!-- Optional: html5-qrcode for camera-based QR scanning (used if you want live QR scan). -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.7/minified/html5-qrcode.min.js"></script>
+
+  <!-- Your CSS -->
+  <link rel="stylesheet" href="Doctor1_Dashboard.css" />
+  <style>
+    /* tiny inline helper to make sure modals inserted by JS look correct if CSS not loaded yet */
+    .hidden { display:none; }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">⚕️ MediTrack</div>
+      <nav>
+        <ul>
+          <li class="active">🏠 Dashboard</li>
+          <li>💬 Chat</li>
+          <li>📅 Schedule</li>
+          <li>📊 Reports</li>
+          <hr>
+          <li>📂 Documents</li>
+          <li>👥 Patients</li>
+          <li>💳 Billing</li>
+        </ul>
+        <div class="sidebar-indicator"></div>
+      </nav>
+    </aside>
+
+    <!-- Main content -->
+    <div class="main-content">
+      <!-- Topbar -->
+      <div class="topbar">
+        <div class="search">
+          <input type="text" placeholder="Search..." id="topSearch" />
+        </div>
+
+        <div class="actions" style="display:flex;align-items:center;gap:12px">
+          <!-- notifications -->
+          <div class="dropdown" style="position:relative">
+            <i class="ri-notification-3-line" title="Notifications" style="font-size:20px;cursor:pointer"></i>
+            <div class="dropdown-menu" aria-live="polite" style="min-width:320px;right:0;top:36px;padding:8px;">
+              <p class="muted">No new notifications</p>
+            </div>
+          </div>
+
+          <!-- topbar tools will be injected before #userMenu by JS -->
+          <!-- user icons container (anchor for inserted tools) -->
+          <span id="userMenu" style="display:flex;align-items:center;gap:10px">
+            <i class="ri-moon-line" id="darkToggle" title="Toggle theme" style="font-size:20px;cursor:pointer"></i>
+            <i class="ri-user-line" title="Profile" style="font-size:20px;cursor:pointer"></i>
+          </span>
+        </div>
+      </div>
+
+      <!-- Welcome Section -->
+      <section class="welcome" id="view-dashboard">
+        <div class="welcome-text">
+          <h2>Good day, Dr. Johanna 👩‍⚕️</h2>
+          <p>Here’s your summary for today</p>
+        </div>
+        <div class="welcome-gif">
+          <!-- use your local animation here; fallback to a gif -->
+          <video autoplay loop muted playsinline style="width:120px;height:90px;object-fit:cover;border-radius:8px;">
+            <source src="../assets/animations/Doc and Patient.webm" type="video/webm" />
+          </video>
+        </div>
+      </section>
+
+      <!-- Stats Section -->
+      <section class="stats" aria-live="polite">
+        <div class="card green">
+          <h3 id="stat-online">210</h3>
+          <p>🟢 Online Patients</p>
+        </div>
+        <div class="card red">
+          <h3 id="stat-offline">32</h3>
+          <p>🔴 Offline Patients</p>
+        </div>
+        <div class="card blue">
+          <h3 id="stat-today-appt">18</h3>
+          <p>📅 Appointments Today</p>
+        </div>
+        <div class="card purple">
+          <h3 id="stat-prescribed">45</h3>
+          <p>💊 Medicines Prescribed</p>
+        </div>
+      </section>
+
+      <!-- Widgets -->
+      <div class="widgets">
+        <div class="card upcoming-appointments">
+          <h3>Upcoming Appointments</h3>
+          <table>
+            <thead>
+              <tr><th>Patient</th><th>Date</th><th>Time</th><th></th></tr>
+            </thead>
+            <tbody id="upcomingApptBody">
+              <!-- JS will populate rows here -->
+              <tr><td>John Doe</td><td>2025-09-07</td><td>10:00 AM</td><td><button class="btn small">Open</button></td></tr>
+              <tr><td>Jane Smith</td><td>2025-09-07</td><td>11:30 AM</td><td><button class="btn small">Open</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card quick-actions">
+          <h3>Quick Actions</h3>
+          <button id="btnAddPatient" class="btn">+ Add Patient</button>
+          <button id="btnNewAppt" class="btn ghost">+ New Appointment</button>
+        </div>
+
+        <div class="card activity">
+          <h3>Recent Activity</h3>
+          <ul id="activityList" style="margin-top:8px">
+            <li>Dr. Kumar updated prescription for John Doe</li>
+            <li>New appointment scheduled with Jane Smith</li>
+            <li>Lab results uploaded for Patient #123</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Doctors Section -->
+      <section class="doctors">
+        <h3 class="section-title">👨‍⚕️ Doctors on Duty</h3>
+        <div class="doctor-grid" id="doctorsGrid">
+          <div class="doctor-card">
+            <img src="doctor1.jpg" alt="Doctor" />
+            <h4>Dr. Alice Green</h4>
+            <p>Cardiologist</p>
+          </div>
+          <div class="doctor-card">
+            <img src="doctor2.jpg" alt="Doctor" />
+            <h4>Dr. Mark Stone</h4>
+            <p>Dermatologist</p>
+          </div>
+          <div class="doctor-card">
+            <img src="doctor3.jpg" alt="Doctor" />
+            <h4>Dr. Emily Ross</h4>
+            <p>Neurologist</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Patients list (populated by JS) -->
+      <section class="patients" style="margin-top:18px">
+        <h3 class="section-title">👥 Patients</h3>
+        <div id="patientsList">
+          <!-- JS will populate patient cards here -->
+        </div>
+      </section>
+
+      <!-- Reports Section -->
+      <section class="reports" style="margin-top:18px">
+        <h3 class="section-title">📊 Reports & Analytics</h3>
+        <div class="report-grid">
+          <div class="report-card">
+            <canvas id="patientsChart"></canvas>
+          </div>
+          <div class="report-card">
+            <canvas id="appointmentsChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- Hidden placeholders for optional views (used by JS to mount content) -->
+      <div id="view-prescription" class="hidden"></div>
+      <div id="view-chat" class="hidden"></div>
+      <div id="view-schedule" class="hidden"></div>
+    </div>
+  </div>
+
+  <!-- Small footer (non intrusive) -->
+  <footer style="position:fixed;left:260px;bottom:8px;font-size:12px;color:rgba(0,0,0,0.45)">
+    MediTrack • Doctor Panel
+  </footer>
+
+  <!-- Replace doctor_dashboard.js with the JS file below -->
+  <script src="Doctor1_Dashboard.css" defer></script>
+</body>
+</html>
+

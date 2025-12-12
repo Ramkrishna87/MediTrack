@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>⚕️ MediTrack — Patient Login</title>
+
+  <!-- Boxicons for icons -->
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="Patient_Login_Page.css" />
+
+  <!-- JS (deferred) -->
+  <script defer src="Patient_Login_Page.js"></script>
+</head>
+<body>
+
+  <!-- Background: prefer mp4, fallback to static image -->
+  <video id="bgVideo" autoplay muted loop playsinline>
+    <!-- Update path if necessary -->
+    <source src="../assets/Background/Background%20of%20Patient%20Login%20page.mp4" type="video/mp4" />
+  </video>
+  <div class="bg-fallback" aria-hidden="true"></div>
+
+  <!-- soft overlay -->
+  <div class="screen-overlay" aria-hidden="true"></div>
+
+  <main class="login-root" role="main">
+    <!-- left / branding column -->
+    <aside class="brand-panel" aria-hidden="false">
+      <div class="brand-inner">
+        <div class="brand-top">
+          <div class="brand-logo-anim">
+            <!-- small animation (use assets) -->
+            <video autoplay muted loop playsinline class="mini-anim">
+              <source src="../assets/animations/Doc%20and%20Patient.webm" type="video/webm" />
+            </video>
+          </div>
+          <div>
+            <div class="brand-logo">⚕️ <span class="brand-name">MediTrack</span></div>
+            <div class="brand-phrase">Hope in every click</div>
+          </div>
+        </div>
+
+        <p class="brand-note">Access prescriptions, book appointments, chat with doctors and keep track of your health — all in one place.</p>
+
+        <div class="brand-quote">
+          <blockquote>“Health is the first wealth.”</blockquote>
+          <div class="quote-author">— MediTrack</div>
+        </div>
+
+        <div class="brand-stats">
+          <div class="stat"><strong>120+</strong><span>Doctors</span></div>
+          <div class="stat"><strong>5k+</strong><span>Reports</span></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- login card (holographic / glass) -->
+    <section class="card-wrap">
+      <div class="login-card holographic" id="auth-card" aria-live="polite">
+        <header class="card-header">
+          <h1 id="auth-heading">Welcome back</h1>
+          <p class="muted" id="auth-sub">Login to continue to <strong>⚕️ MediTrack</strong></p>
+        </header>
+
+        <!-- Social login (top) -->
+        <div class="social-row">
+          <button class="social-btn google" id="btn-google" title="Continue with Google" aria-label="Continue with Google">
+            <i class='bx bxl-google'></i> Continue with Google
+          </button>
+          <button class="social-btn facebook" id="btn-facebook" title="Continue with Facebook" aria-label="Continue with Facebook">
+            <i class='bx bxl-facebook-square'></i> Continue with Facebook
+          </button>
+        </div>
+
+        <div class="hr"><span>or</span></div>
+
+        <!-- LOGIN FORM -->
+        <form id="loginForm" class="auth-form active-form" autocomplete="on" novalidate>
+          <div class="input-group">
+            <i class="bx bx-envelope"></i>
+            <input id="loginEmail" type="email" placeholder="Email" required autocomplete="email" />
+          </div>
+
+          <div class="input-group">
+            <i class="bx bx-lock"></i>
+            <input id="loginPassword" type="password" placeholder="Password" required autocomplete="current-password" />
+            <i class="bx bx-eye-slash toggle-eye" id="toggle-login-eye" title="Show / hide password" role="button" tabindex="0" aria-label="Show password"></i>
+          </div>
+
+          <div class="row-space">
+            <label class="remember">
+              <input type="checkbox" id="rememberMe" /> Remember me
+            </label>
+            <button type="button" class="link-btn" id="show-forgot">Forgot?</button>
+          </div>
+
+          <button class="btn primary" type="submit">Log in</button>
+
+          <div class="signup-line">
+            Don't have an account? <button class="link-btn" id="show-signup">Create account</button>
+          </div>
+        </form>
+
+        <!-- SIGNUP FORM -->
+        <form id="signupForm" class="auth-form" autocomplete="on" novalidate>
+          <div class="input-row">
+            <div class="input-group">
+              <i class="bx bx-user"></i>
+              <input id="signupName" type="text" placeholder="Full name" required autocomplete="name" />
+            </div>
+            <div class="input-group">
+              <i class="bx bx-calendar"></i>
+              <input id="signupAge" type="number" placeholder="Age" min="1" max="120" />
+            </div>
+          </div>
+
+          <div class="input-row">
+            <div class="input-group">
+              <i class="bx bx-envelope"></i>
+              <input id="signupEmail" type="email" placeholder="Email" required autocomplete="email" />
+            </div>
+            <div class="input-group">
+              <i class="bx bx-phone"></i>
+              <input id="signupPhone" type="tel" placeholder="Contact number" />
+            </div>
+          </div>
+
+          <div class="input-row">
+            <div class="input-group">
+              <i class="bx bx-lock"></i>
+              <input id="signupPassword" type="password" placeholder="Password (min 6)" required autocomplete="new-password" />
+              <i class="bx bx-eye-slash toggle-eye" id="toggle-signup-eye" title="Show / hide password" role="button" tabindex="0" aria-label="Show password"></i>
+            </div>
+
+            <div class="input-group">
+              <i class="bx bx-droplet"></i>
+              <select id="signupBlood">
+                <option value="">Blood group (optional)</option>
+                <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+                <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="input-row">
+            <div class="input-group">
+              <i class="bx bx-map"></i>
+              <input id="signupAddress" type="text" placeholder="Address / Location" />
+            </div>
+            <div class="input-group">
+              <i class="bx bx-gender"></i>
+              <select id="signupGender">
+                <option value="">Gender (optional)</option>
+                <option>Male</option><option>Female</option><option>Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="input-row">
+            <div class="input-group">
+              <i class="bx bx-notepad"></i>
+              <input id="signupCondition" type="text" placeholder="Existing conditions (optional)" />
+            </div>
+            <div class="input-group">
+              <i class="bx bx-user-plus"></i>
+              <input id="signupEmergency" type="tel" placeholder="Emergency contact" />
+            </div>
+          </div>
+
+          <div class="input-row">
+            <div class="input-group">
+              <i class="bx bx-briefcase-alt-2"></i>
+              <select id="signupPrefDoc">
+                <option value="">Preferred doctor gender/exp (optional)</option>
+                <option>Any</option><option>Female</option><option>Male</option>
+              </select>
+            </div>
+            <div class="input-group small">
+              <label class="toggle-location"><input type="checkbox" id="enableLocation" /> Enable location</label>
+            </div>
+          </div>
+
+          <div class="row-space">
+            <label class="muted small">By signing up you agree to our <a href="#" target="_blank">Terms</a></label>
+          </div>
+
+          <button class="btn primary" type="submit">Create account</button>
+          <div class="signup-line">
+            Already have an account? <button class="link-btn" id="show-login">Login</button>
+          </div>
+        </form>
+
+        <!-- FORGOT FORM -->
+        <form id="forgotForm" class="auth-form" novalidate>
+          <p class="muted small">Enter your email and we'll send a link to reset your password.</p>
+          <div class="input-group">
+            <i class="bx bx-envelope"></i>
+            <input id="forgotEmail" type="email" placeholder="Email" required autocomplete="email" />
+          </div>
+          <div class="row-space">
+            <button class="btn ghost" type="button" id="forgot-cancel">Cancel</button>
+            <button class="btn primary" type="submit">Send reset</button>
+          </div>
+        </form>
+
+        <footer class="card-footer">
+          <div class="social-icons">
+            <!-- keep these as small colour-icons in card footer (not floating) -->
+            <a class="social small social-hover" id="btn-instagram" title="Instagram" role="button" tabindex="0"><i class='bx bxl-instagram'></i></a>
+            <a class="social small social-hover" id="btn-twitter" title="Twitter" role="button" tabindex="0"><i class='bx bxl-twitter'></i></a>
+            <a class="social small social-hover" id="btn-linkedin" title="LinkedIn" role="button" tabindex="0"><i class='bx bxl-linkedin'></i></a>
+          </div>
+          <div class="version muted small">MediTrack • v0.1 (demo)</div>
+        </footer>
+      </div>
+    </section>
+  </main>
+
+  <!-- small toast / status (JS will use) -->
+  <div id="toast" aria-hidden="true" role="status" class="toast"></div>
+
+</body>
+</html>

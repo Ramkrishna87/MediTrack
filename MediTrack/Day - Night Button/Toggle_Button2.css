@@ -1,0 +1,300 @@
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #f0f0f0;
+}
+
+/* Toggle container */
+.theme-toggle {
+  position: relative;
+}
+
+.toggle-label {
+  width: 150px;
+  height: 70px;
+  border-radius: 40px;
+  position: relative;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  transition: background 0.8s ease;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.scene {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  text-align: center;
+  overflow: hidden;
+}
+
+/* Sky */
+.sky {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60%;
+  background: linear-gradient(to top, #87ceeb, #dff6ff);
+  transition: background 1s ease;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  font-size: 22px;
+}
+
+.sun, .moon {
+  position: absolute;
+  transition: opacity 1s ease, transform 1s ease;
+  font-size: 26px;
+}
+
+.sun {
+  left: 20%;
+  bottom: -5px;
+  opacity: 1;
+  animation: riseSun 4s infinite alternate ease-in-out;
+}
+
+/* Moon */
+.moon {
+  right: 20%;
+  bottom: -5px;
+  opacity: 0;
+  transform: translateY(-20px);
+  font-size: 24px;
+  animation: riseMoon 4s infinite alternate ease-in-out;
+  animation-play-state: paused; /* Only runs at night */
+  transition: text-shadow 0.6s ease;
+}
+
+/* Night mode moon glow */
+#toggle:checked + .toggle-label .moon {
+  opacity: 1;
+  transform: translateY(0px);
+  animation-play-state: running;
+  text-shadow: 0 0 8px #d6d6ff, 0 0 15px #a8baff;
+  animation: riseMoon 4s infinite alternate ease-in-out,
+             moonGlow 3s infinite ease-in-out;
+}
+
+/* Moon glow pulse */
+@keyframes moonGlow {
+  0%   { text-shadow: 0 0 6px #d6d6ff, 0 0 10px #a8baff; }
+  50%  { text-shadow: 0 0 12px #e0e0ff, 0 0 20px #c2d0ff; }
+  100% { text-shadow: 0 0 6px #d6d6ff, 0 0 10px #a8baff; }
+}
+
+
+/* Clouds */
+.cloud {
+  position: absolute;
+  top: 10px;
+  opacity: 0.8;
+  animation: cloudDrift linear infinite;
+  transition: filter 1s ease, opacity 1s ease;
+}
+
+/* Bigger, slower cloud */
+.cloud1 {
+  font-size: 22px;
+  left: -30%;
+  animation-duration: 30s;
+  animation-delay: 0s;
+}
+
+/* Smaller, faster cloud */
+.cloud2 {
+  font-size: 16px;
+  left: 70%;
+  animation-duration: 18s;
+  animation-delay: 8s;
+}
+
+/* Night mode → darker clouds */
+#toggle:checked + .toggle-label .cloud {
+  filter: brightness(0.7) grayscale(30%);
+  opacity: 0.65;
+}
+
+
+/* Cloud drifting animation */
+@keyframes cloudDrift {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(140%); }
+}
+
+
+
+/* Stars */
+.stars {
+  position: absolute;
+  font-size: 10px;
+  color: #fff;
+  opacity: 0;
+  transition: opacity 1s ease;
+  text-shadow: 0 0 4px #fff;
+}
+.star1 { top: 15%; left: 20%; }
+.star2 { top: 25%; right: 25%; }
+.star3 { top: 10%; left: 60%; }
+.star4 { top: 30%; right: 40%; }
+
+
+/* Shooting star */
+.sky::before {
+  content: "🌠";
+  position: absolute;
+  top: 15%;
+  left: -10%;
+  font-size: 18px;
+  opacity: 0;
+  transform: translateX(0) translateY(0) rotate(-20deg);
+  animation: shootingStar 12s infinite;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+/* Shooting star only at night */
+#toggle:checked + .toggle-label .sky::before {
+  opacity: 1;
+}
+
+/* Shooting star animation */
+@keyframes shootingStar {
+  0%, 80% {
+    transform: translateX(0) translateY(0) rotate(-20deg);
+    opacity: 0;
+  }
+  85% {
+    transform: translateX(80px) translateY(40px) rotate(-20deg);
+    opacity: 1;
+  }
+  90% {
+    transform: translateX(160px) translateY(80px) rotate(-20deg);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateX(200px) translateY(100px) rotate(-20deg);
+    opacity: 0;
+  }
+}
+
+
+/* Base Land */
+.land {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  background: linear-gradient(to top, #228b22, #6cc96c);
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  font-size: 20px;
+  transition: background 1s ease;
+  overflow: hidden;
+}
+
+/* Night mode land (moonlight reflection) */
+#toggle:checked + .toggle-label .land {
+  background: linear-gradient(to top, #013220, #1b4332);
+}
+
+#toggle:checked + .toggle-label .land::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  background: radial-gradient(circle at 70% 0%, rgba(200, 220, 255, 0.25), transparent 70%);
+  animation: landGlow 5s infinite ease-in-out;
+}
+
+/* Moonlight shimmer animation */
+@keyframes landGlow {
+  0%   { opacity: 0.15; }
+  50%  { opacity: 0.3; }
+  100% { opacity: 0.15; }
+}
+
+
+/* Fog */
+.fog {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background: radial-gradient(circle at 50% 100%, rgba(255,255,255,0.1), transparent 70%);
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+/* ***** */
+.***** {
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  width: 55px;
+  height: 55px;
+  background: rgba(255,255,255,0.4);
+  border-radius: 50%;
+  transition: transform 0.8s ease;
+  pointer-events: none;
+}
+
+/* Hide input */
+#toggle { display: none; }
+
+/* --- NIGHT MODE --- */
+#toggle:checked + .toggle-label .sky {
+  background: linear-gradient(to top, #0f2027, #203a43, #2c5364);
+}
+
+#toggle:checked + .toggle-label .land {
+  background: linear-gradient(to top, #013220, #1b4332);
+}
+
+#toggle:checked + .toggle-label .sun {
+  opacity: 0;
+  transform: translateY(-30px);
+  animation-play-state: paused;
+}
+
+#toggle:checked + .toggle-label .moon {
+  opacity: 1;
+  transform: translateY(0px);
+  animation-play-state: running;
+}
+
+#toggle:checked + .toggle-label .stars {
+  opacity: 1;
+}
+
+#toggle:checked + .toggle-label .fog {
+  opacity: 1;
+}
+
+#toggle:checked + .toggle-label .***** {
+  transform: translateX(80px);
+}
+
+/* Animations */
+@keyframes riseSun {
+  from { transform: translateY(0px); }
+  to { transform: translateY(-8px); }
+}
+
+@keyframes riseMoon {
+  from { transform: translateY(0px); }
+  to { transform: translateY(-8px); }
+}

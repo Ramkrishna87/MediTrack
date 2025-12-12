@@ -1,0 +1,97 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #f0f2f5 url("Caduceus.png") no-repeat center center;
+  background-size: 400px;
+  background-attachment: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.container {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  width: 340px;
+  text-align: center;
+  position: relative;
+}
+
+.logo {
+  font-size: 26px;
+  font-weight: bold;
+  color: #007bff;
+  margin-bottom: 10px;
+}
+
+.animation {
+  width: 140px;
+  height: 140px;
+  margin: 0 auto 20px;
+}
+
+.animation img {
+  width: 100%;
+  border-radius: 50%;
+}
+
+.input-group {
+  position: relative;
+  margin: 12px auto;
+  width: 100%;
+}
+
+input {
+  width: 100%;
+  padding: 10px 38px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+/* Icons */
+.icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  stroke: #444;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+  pointer-events: auto;
+}
+
+.email-icon { left: 10px; opacity: 0.9; }
+.lock-icon { left: 10px; opacity: 0.9; }
+.eye-icon { right: 10px; cursor: pointer; }
+
+button {
+  width: 100%;
+  padding: 10px;
+  background: #007bff;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+button:hover { background: #0056b3; }
+
+.toggle { margin-top: 15px; font-size: 14px; }
+.toggle span { color: #007bff; cursor: pointer; }
+
+.forgot { margin-top: 10px; font-size: 13px; }
+.forgot a { color: #555; text-decoration: none; }
+.forgot a:hover { text-decoration: underline; }
+
+.hidden { display: none; }
+
