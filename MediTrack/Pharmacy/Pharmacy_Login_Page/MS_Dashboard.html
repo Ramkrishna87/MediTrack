@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>⚕️ MediTrack — Pharmacy Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="MS_Dashboard.css">
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <script type="module" src="MS_Dashboard.js"></script>
+</head>
+
+<body>
+
+<div class="app-shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">💊</div>
+      <div>
+        <h2>MediTrack</h2>
+        <small>Pharmacy Panel</small>
+      </div>
+    </div>
+
+    <nav>
+      <button class="nav-item active" data-view="dashboard">
+        <i class="bx bx-home"></i> Dashboard
+      </button>
+      <button class="nav-item" data-view="scan">
+        <i class="bx bx-qr-scan"></i> Scan QR
+      </button>
+      <button class="nav-item" data-view="prescription">
+        <i class="bx bx-file"></i> Prescription
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <small>Logged in as</small>
+      <strong>Sai Medical Store</strong>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div>
+        <h1>Pharmacy Dashboard</h1>
+        <p class="muted">Verify & dispense medicines securely</p>
+      </div>
+
+      <div class="top-actions">
+        <!-- Dark mode toggle -->
+        <label class="theme-switch">
+          <input type="checkbox" id="themeToggle">
+          <span class="slider"></span>
+        </label>
+
+        <button id="logoutBtn" class="btn ghost">
+          <i class="bx bx-log-out"></i> Logout
+        </button>
+      </div>
+    </header>
+
+    <!-- VIEWS -->
+
+    <!-- DASHBOARD -->
+    <section class="view active-view" id="view-dashboard">
+
+      <div class="cards-row">
+        <div class="card profile-card">
+          <h3>🏪 Pharmacy Profile</h3>
+          <p><strong>Name:</strong> Sai Medical Store</p>
+          <p><strong>License:</strong> MH-PUNE-12345</p>
+          <p><strong>Contact:</strong> 9876543210</p>
+          <p><strong>Location:</strong> Pune, Maharashtra</p>
+        </div>
+
+        <div class="card info-card">
+          <h3>💡 Quick Info</h3>
+          <ul>
+            <li>✔ Licensed pharmacy</li>
+            <li>✔ QR-verified prescriptions only</li>
+            <li>✔ Doctor approval required for changes</li>
+          </ul>
+        </div>
+      </div>
+
+    </section>
+
+   <!-- SCAN -->
+<section class="view" id="view-scan">
+  <div class="card center-card">
+    <h2>Scan Prescription</h2>
+    <p class="muted">Scan QR code or enter prescription ID</p>
+
+    <!-- Animation -->
+    <video autoplay loop muted playsinline class="scan-anim">
+      <source src="../../assets/animations/Scanning Prescription.webm" type="video/webm">
+    </video>
+
+    <!-- SCAN QR BUTTON -->
+    <button class="btn primary" id="scanQrBtn">
+      <i class="bx bx-qr-scan"></i> Scan QR Code
+    </button>
+    <div id="qr-reader" style="width:260px;margin:auto"></div>
+
+    <div class="divider">OR</div>
+
+    <!-- MANUAL INPUT -->
+    <input id="scanInput" placeholder="Enter Prescription ID (e.g. RX-1023)">
+    <button class="btn gold" id="scanBtn">
+      Load Prescription
+    </button>
+  </div>
+</section>
+
+    <!-- PRESCRIPTION -->
+    <section class="view" id="view-prescription">
+      <div class="card paper">
+        <header class="paper-header">
+          <div>
+            <strong>City Health Clinic</strong>
+            <div class="muted small">Digital Prescription</div>
+          </div>
+          <div class="muted small">ID: <span id="pid">—</span></div>
+        </header>
+
+        <p><strong>Patient:</strong> <span id="pname">—</span></p>
+        <p><strong>Doctor:</strong> <span id="dname">—</span></p>
+
+        <table class="med-table">
+          <thead>
+            <tr>
+              <th>Medicine</th>
+              <th>Dosage</th>
+              <th>Duration</th>
+            </tr>
+          </thead>
+          <tbody id="medsBody">
+            <tr>
+              <td contenteditable>Paracetamol 500mg</td>
+              <td contenteditable>1-0-1</td>
+              <td contenteditable>5 days</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="actions">
+          <button class="btn success" id="approveBtn">Approve & Dispense</button>
+          <button class="btn warning" id="altBtn">Request Alternative</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+</body>
+</html>

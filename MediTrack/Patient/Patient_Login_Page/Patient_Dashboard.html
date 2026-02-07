@@ -4,7 +4,6 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>⚕️ MediTrack — Patient Dashboard</title>
-
   <!-- Inter font -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="Patient_Dashboard.css" />
@@ -25,8 +24,8 @@
       </div>
     </div>
   </div>
-
   <div class="app-shell">
+
     <!-- Sidebar (fixed left) -->
     <aside class="sidebar" id="sidebar">
       <div class="brand">
@@ -44,6 +43,7 @@
         <button class="nav-item" data-view="prescriptions">Prescriptions</button>
         <button class="nav-item" data-view="payments">Payments</button>
         <button class="nav-item" data-view="chat">Chat (QR)</button>
+        <button class="nav-item" data-view="settings">Settings</button>
       </nav>
 
       <div class="sidebar-footer">
@@ -59,8 +59,8 @@
           <h1 class="page-title">Welcome, <span id="display-name">Patient Name</span></h1>
           <p class="subtitle muted">Your health, organized and accessible</p>
         </div>
-
         <div class="controls">
+
           <!-- KEEP THE TOGGLE EXACTLY AS YOU HAD IT -->
           <div class="theme-toggle" title="Toggle theme">
             <input type="checkbox" id="toggle" aria-label="Toggle dark mode">
@@ -86,8 +86,8 @@
           </div>
         </div>
       </header>
-
       <section class="view-container">
+
         <!-- DASHBOARD VIEW -->
         <section id="view-dashboard" class="view active-view" aria-live="polite">
           <div class="header-row">
@@ -110,92 +110,27 @@
             <div class="stats-col">
               <div class="stat card hover-tilt">
                 <div class="stat-title">📅 Upcoming</div>
-                <div class="stat-value" id="stat-upcoming">2 Appointments</div>
+                <!-- <div class="stat-value" id="stat-upcoming">2 Appointments</div> -->
+                 <div id="stat-upcoming">—</div>
               </div>
               <div class="stat card hover-tilt">
                 <div class="stat-title">💊 Prescriptions</div>
-                <div class="stat-value" id="stat-pres">3 Active</div>
+                <!-- <div class="stat-value" id="stat-pres">3 Active</div> -->
+                 <div id="stat-pres">—</div>
+
               </div>
               <div class="stat card hover-tilt">
                 <div class="stat-title">📑 Reports</div>
-                <div class="stat-value" id="stat-reports">1 New</div>
+                <!-- <div class="stat-value" id="stat-reports">1 New</div> -->
+                 <div id="stat-reports">—</div>
               </div>
             </div>
           </div>
-
           <h2 class="section-heading">Available Doctors</h2>
 
-          <div class="doctor-grid">
-            <!-- Doctor card 1 -->
-            <article class="doctor-card flippable" data-doctor="Dr. Sharma" data-number="+919000000001" data-specialty="Cardiology" data-disease="Heart Condition">
-              <div class="card-inner">
-                <div class="card-front">
-                  <div class="doctor-thumb">
-                    <video class="small-anim" autoplay loop muted playsinline>
-                      <source src="../assets/animations/Doctor_animated.mp4" type="video/mp4" />
-                    </video>
-                  </div>
-                  <div class="front-meta">
-                    <h3 class="doctor-name">Dr. Sharma</h3>
-                    <p class="doctor-specialty">Cardiology</p>
-                    <p class="doctor-brief muted">Available · Mon, Wed · 10:00–13:00</p>
-                    <div class="doctor-actions">
-                      <button class="flip-btn">View Details</button>
-                      <button class="prescribe-btn" data-patient="Patient Name">Prescribe</button>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="card-back">
-                  <h3>Dr. Sharma</h3>
-                  <p class="muted">Cardiology · 10+ yrs</p>
-                  <p><strong>Recent diagnosis:</strong> Heart Condition</p>
-                  <div class="book-section">
-                    <label>Book appointment:</label>
-                    <div class="book-controls">
-                      <input type="datetime-local" class="appt-input" />
-                      <button class="book-btn">Book</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </article>
-
-            <!-- Doctor card 2 -->
-            <article class="doctor-card flippable" data-doctor="Dr. Mehta" data-number="+919000000002" data-specialty="Neurology" data-disease="Migraine">
-              <div class="card-inner">
-                <div class="card-front">
-                  <div class="doctor-thumb">
-                    <video class="small-anim" autoplay loop muted playsinline>
-                      <source src="../assets/animations/Doctor_animated.mp4" type="video/mp4" />
-                    </video>
-                  </div>
-                  <div class="front-meta">
-                    <h3 class="doctor-name">Dr. Mehta</h3>
-                    <p class="doctor-specialty">Neurology</p>
-                    <p class="doctor-brief muted">Available · Tue, Thu · 14:00–17:00</p>
-                    <div class="doctor-actions">
-                      <button class="flip-btn">View Details</button>
-                      <button class="prescribe-btn" data-patient="Patient Name">Prescribe</button>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="card-back">
-                  <h3>Dr. Mehta</h3>
-                  <p class="muted">Neurology · 8 yrs</p>
-                  <p><strong>Recent diagnosis:</strong> Migraine</p>
-                  <div class="book-section">
-                    <label>Book appointment:</label>
-                    <div class="book-controls">
-                      <input type="datetime-local" class="appt-input" />
-                      <button class="book-btn">Book</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </article>
+          <div class="doctor-grid" id="dashboard-doctors">
           </div>
+
 
           <!-- Right-side drawer -->
           <aside id="right-drawer" class="right-drawer" aria-hidden="true">
@@ -207,14 +142,17 @@
               <p class="muted">Specialty: <span id="drawer-specialty">-</span></p>
               <p class="muted">Recent Visit: <span id="drawer-disease">-</span></p>
 
-              <div class="drawer-section">
-                <h4>Prescriptions</h4>
-                <div class="panel small" id="drawer-pres-list">No prescriptions yet.</div>
+             <div class="drawer-section">
+               <h4>Prescriptions</h4>
+               <div class="panel small" id="drawer-pres-list">No prescriptions yet.</div>
               </div>
+
+
               <div class="drawer-section">
                 <h4>Appointments</h4>
                 <div class="panel small" id="drawer-appt-list">No upcoming appointments.</div>
               </div>
+
 
               <div class="drawer-section">
                 <h4>Actions</h4>
@@ -230,6 +168,7 @@
           <!-- Info & animations row (Medication Reminder card added) -->
           <div class="info-row">
             <div class="info-left">
+
               <!-- Medication Reminder Card -->
               <div class="card hover-tilt med-card">
                 <div class="med-card-left">
@@ -237,6 +176,7 @@
                   <div class="muted small">Keep this page open for active alarms</div>
                 </div>
                 <div class="med-list" id="med-list">
+
                   <!-- JS will fill dummy items -->
                 </div>
                 <div class="med-actions">
@@ -271,6 +211,7 @@
               </div>
             </div>
 
+
             <div class="info-right">
               <div class="card hover-tilt report-card">
                 <div>
@@ -299,15 +240,20 @@
           </div>
         </section>
 
+
         <!-- PRESCRIPTIONS VIEW -->
         <section id="view-prescriptions" class="view">
           <div class="prescription-toolbar">
             <button id="pres-back" class="btn-outline">← Back to Dashboard</button>
           </div>
+          <div class="card-list" id="pres-history"></div>
+          <hr style="margin:16px 0" />
 
           <article class="prescription paper" id="prescription">
+
             <!-- content kept simple; will be populated by JS when needed -->
             <header class="pres-header">
+              <img id="pres-qr" class="pres-qr" />
               <div class="hospital">
                 <div class="h-name">City Health Clinic</div>
                 <div class="h-sub muted">General &amp; Specialized Care</div>
@@ -360,6 +306,7 @@
             <p class="muted">Search by name or specialty — (mock results). We'll connect Google Places later.</p>
           </div>
 
+
           <div class="search-row card">
             <input id="doc-search" type="search" placeholder="Search doctor or specialty (e.g. cardiology, Sharma)" />
             <button id="search-btn" class="btn small">Search</button>
@@ -367,6 +314,7 @@
           </div>
 
           <div id="search-results" class="doctor-grid" aria-live="polite">
+
             <!-- JS populates search results -->
           </div>
         </section>
@@ -379,9 +327,11 @@
           </div>
 
           <div id="reports-list" class="card-list">
+
             <!-- JS will populate mock reports -->
           </div>
         </section>
+
 
         <!-- PAYMENTS VIEW -->
         <section id="view-payments" class="view">
@@ -410,6 +360,46 @@
           </div>
         </section>
 
+                <!-- ================= SETTINGS (NEW) ================= -->
+
+      <section id="view-settings" class="view">
+          <h2 class="section-title">Settings</h2>
+
+          <!-- PROFILE -->
+          <div class="card settings-card">
+            <h3>Profile</h3>
+            <label>Full Name</label>
+            <input type="text" id="settings-name" placeholder="Enter your full name">
+
+            <label>Email</label>
+            <input type="email" id="settings-email" disabled>
+            <button class="btn" id="save-profile">Save Changes</button>
+          </div>
+
+          <!-- APPEARANCE -->
+          <div class="card settings-card">
+            <h3>Appearance</h3>
+            <label>
+              <input type="checkbox" id="settings-dark">
+              Enable Dark Mode
+            </label>
+          </div>
+
+
+          <!-- NOTIFICATIONS -->
+          <div class="card settings-card">
+            <h3>Notifications</h3>
+            <label><input type="checkbox" checked> Appointment Alerts</label>
+            <label><input type="checkbox" checked> Medicine Reminders</label>
+            <label><input type="checkbox" checked> Prescription Updates</label>
+          </div>
+
+          <!-- SECURITY -->
+          <div class="card settings-card">
+            <h3>Security</h3>
+            <button class="btn danger" id="logout-btn">Logout</button>
+          </div>
+        </section>
       </section>
     </main>
   </div>
@@ -425,10 +415,9 @@
       <div class="alarm-body">
         <h2 id="alarm-title">Time to take medicine</h2>
         <p id="alarm-sub" class="muted">Paracetamol 500mg — 10:00 AM</p>
-
+        
         <div class="alarm-actions">
           <button id="mark-taken" class="btn">Mark as Taken</button>
-
           <div class="snooze-group">
             <label for="snooze-select" class="muted">Remind me later</label>
             <select id="snooze-select">
@@ -462,8 +451,6 @@
   <!-- Hidden audio: place your alarm here (fallback to hosted if missing) -->
   <audio id="med-sound" src="../assets/sounds/med_alert.mp3" preload="auto"></audio>
 
-  <script src="../Patient_Firebase.js" type="module"></script> 
-  <script src="./Patient_Dashboard.js" type="module"></script>
-  <!-- <script src="./Patient_Login_Page.js" type="module"></script> -->
+<script src="Patient_Dashboard.js" type="module"></script>
 </body>
 </html>

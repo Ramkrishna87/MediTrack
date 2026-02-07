@@ -1,62 +1,136 @@
-/* General Reset */
+:root {
+  --color-primary: #3498db;
+  --color-primary-dark: #2980b9;
+  --color-secondary: #2c3e50;
+  --color-background: #f5f7fa;
+  --color-text: #2c3e50;
+  --color-light-gray: #ecf0f1;
+}
+
 body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-  background: #f5f7fa;
-  color: #2c3e50;
+  background: var(--color-background);
+  color: var(--color-text);
   text-align: center;
 }
 
+/* HEADER */
 header {
-  background: #2c3e50;
-  color: white;
+  background: var(--color-secondary);
   padding: 20px 10px;
 }
 
+header h1 a {
+  color: white;
+  text-decoration: none;
+}
+
+header p {
+  color: #bdc3c7;
+  margin-top: 5px;
+}
+
+/* MAIN */
 main {
   padding: 40px 20px;
 }
 
+h2 {
+  margin-bottom: 15px;
+}
+
+/* TOP ANIMATION */
+.top-animation {
+  margin: 20px auto 30px;
+  max-width: 300px;
+}
+
+.top-animation video {
+  width: 100%;
+}
+
+/* CARDS */
 .role-selection {
   display: flex;
   justify-content: center;
   gap: 30px;
-  margin-top: 30px;
+  margin-top: 20px;
   flex-wrap: wrap;
 }
 
 .card {
   background: white;
-  border-radius: 12px;
-  padding: 20px;
-  width: 280px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  transition: transform 0.2s;
+  border-radius: 14px;
+  padding: 25px;
+  width: 260px;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+  border: 1px solid var(--color-light-gray);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .card:hover {
-  transform: scale(1.05);
+  transform: translateY(-6px);
+  box-shadow: 0 12px 22px rgba(0,0,0,0.18);
 }
 
+h3 {
+  color: var(--color-primary);
+}
+
+/* BUTTON */
 button {
-  background: #3498db;
+  background: var(--color-primary);
   color: white;
   border: none;
-  padding: 10px 15px;
+  padding: 12px 20px;
   border-radius: 8px;
   cursor: pointer;
-  margin-top: 10px;
-  font-size: 14px;
+  margin-top: 15px;
+  font-size: 15px;
+  width: 100%;
+  transition: background 0.2s ease, transform 0.2s ease;
 }
 
 button:hover {
-  background: #2980b9;
+  background: var(--color-primary-dark);
+  transform: scale(1.02);
 }
 
+/* FOOTER */
 footer {
   margin-top: 50px;
-  background: #2c3e50;
+  background: var(--color-secondary);
   color: white;
   padding: 15px;
+}
+
+/* ANIMATIONS */
+.fade-in {
+  animation: fadeIn 0.6s ease forwards;
+}
+
+.fade-in-delay {
+  animation: fadeIn 0.9s ease forwards;
+}
+
+.slide-up {
+  animation: slideUp 0.6s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

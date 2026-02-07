@@ -7,13 +7,13 @@
  * Firebase Configuration & Init
  *************************************/
 var firebaseConfig = {
-  apiKey: "AIzaSyDHSTbpfjcN5ci6cfFKv2W2AKSxzKzTFOA",
-  authDomain: "meditrack-40f97.firebaseapp.com",
-  projectId: "meditrack-40f97",
-  storageBucket: "meditrack-40f97.appspot.com",
-  messagingSenderId: "672686904396",
-  appId: "1:672686904396:web:77eee8fb5f98c7a8d190e9",
-  measurementId: "G-MPZ5VDKWH5"
+  apiKey: "AIzaSyBuIibcaDVQITxabmh7ZkrVAp9uvCjzfw0",
+  authDomain: "meditrack-5cc0c.firebaseapp.com",
+  projectId: "meditrack-5cc0c",
+  storageBucket: "meditrack-5cc0c.firebasestorage.app",
+  messagingSenderId: "502198602638",
+  appId: "1:502198602638:web:0a189d9dfba9cc17adb2df",
+  measurementId: "G-D4FE4D2PJE"
 };
 
 // Initialize Firebase (v8 syntax)
@@ -23,12 +23,42 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 const storage = firebase.storage();
 
+// 👁️ Password visibility toggle (SAFE, MODULE-FRIENDLY)
+document.addEventListener("click", (e) => {
+  const icon = e.target.closest(".eye-icon");
+  if (!icon) return;
+
+  const inputId = icon.dataset.target;
+  const input = document.getElementById(inputId);
+  if (!input) return;
+
+  if (input.type === "password") {
+    input.type = "text";
+    icon.style.opacity = "0.6";
+  } else {
+    input.type = "password";
+    icon.style.opacity = "1";
+  }
+});
 
 /****************************************************
  * 👁️ Toggle Password Visibility
  ****************************************************/
-function togglePassword(id, iconRef) {
+// function togglePassword(id, iconRef) {
+//   const input = document.getElementById(id);
+//   if (input.type === "password") {
+//     input.type = "text";
+//     iconRef.style.opacity = "0.6";
+//   } else {
+//     input.type = "password";
+//     iconRef.style.opacity = "1";
+//   }
+// }
+
+window.togglePassword = function (id, iconRef) {
   const input = document.getElementById(id);
+  if (!input) return;
+
   if (input.type === "password") {
     input.type = "text";
     iconRef.style.opacity = "0.6";
@@ -36,7 +66,8 @@ function togglePassword(id, iconRef) {
     input.type = "password";
     iconRef.style.opacity = "1";
   }
-}
+};
+
 
 
 /****************************************************

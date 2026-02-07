@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>⚕️ MediTrack — Medical Shop Login</title>
+
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="MS_Login.css" />
+  <script defer src="MS_Login.js"></script>
+</head>
+
+<body>
+
+  <video id="bgVideo" autoplay muted loop playsinline preload="auto">
+    <source src="../../assets/Background/medical-shop-bg.mp4" type="video/mp4" />
+  </video>
+  <div class="screen-overlay"></div>
+
+  <main class="login-root">
+
+    <aside class="brand-panel">
+      <div class="brand-logo">⚕️ MediTrack</div>
+      <p class="brand-phrase">Medical Shop Portal</p>
+      <p class="brand-note">
+        Secure access for licensed pharmacies to verify prescriptions.
+      </p>
+    </aside>
+
+    <section class="card-wrap">
+      <div class="login-card">
+
+        <header class="card-header">
+          <h1 id="cardTitle">Welcome back</h1>
+          <p class="muted" id="cardSub">Login to continue</p>
+        </header>
+
+        <!-- LOGIN -->
+        <form id="loginForm" class="auth-form active-form">
+          <div class="input-group">
+            <i class="bx bx-envelope"></i>
+            <input id="loginEmail" type="email" placeholder="Email" required />
+          </div>
+
+          <div class="input-group">
+            <i class="bx bx-lock"></i>
+            <input id="loginPassword" type="password" placeholder="Password" required />
+            <i class="bx bx-eye-slash toggle-eye" id="toggle-login-eye"></i>
+          </div>
+
+          <div class="row-space">
+            <button type="button" class="link-btn" id="showForgot">Forgot?</button>
+          </div>
+
+          <button class="btn primary">Login</button>
+
+          <p class="footer-note">
+            Don’t have an account?
+            <button type="button" class="link-btn" id="showSignup">Request access</button>
+          </p>
+        </form>
+
+        <!-- SIGNUP -->
+        <form id="signupForm" class="auth-form">
+          <div class="input-group">
+            <i class="bx bx-store"></i>
+            <input id="shopName" placeholder="Shop Name" required />
+          </div>
+
+          <div class="input-group">
+            <i class="bx bx-id-card"></i>
+            <input id="licenseNo" placeholder="License Number" required />
+          </div>
+
+          <div class="input-group">
+            <i class="bx bx-envelope"></i>
+            <input id="signupEmail" type="email" placeholder="Email" required />
+          </div>
+
+          <div class="input-group">
+            <i class="bx bx-phone"></i>
+            <input id="phone" type="tel" placeholder="Phone Number" required />
+          </div>
+
+          <div class="input-group">
+            <i class="bx bx-map"></i>
+            <input id="location" placeholder="Shop Location" readonly />
+          </div>
+
+          <button type="button" class="btn ghost" id="getLocation">
+            Auto-detect location
+          </button>
+
+          <div class="input-group">
+            <i class="bx bx-lock"></i>
+            <input id="signupPassword" type="password" placeholder="Password" required />
+            <i class="bx bx-eye-slash toggle-eye" id="toggle-signup-eye"></i>
+          </div>
+
+          <div class="input-group">
+            <i class="bx bx-lock-alt"></i>
+            <input id="confirmPassword" type="password" placeholder="Confirm Password" required />
+            <i class="bx bx-eye-slash toggle-eye" id="toggle-confirm-eye"></i>
+          </div>
+
+          <button class="btn primary">Request Access</button>
+
+          <button type="button" class="link-btn" id="showLogin">Back to login</button>
+        </form>
+
+        <!-- FORGOT -->
+        <form id="forgotForm" class="auth-form">
+          <div class="input-group">
+            <i class="bx bx-envelope"></i>
+            <input id="forgotEmail" type="email" placeholder="Email" required />
+          </div>
+
+          <button class="btn primary">Send reset link</button>
+          <button type="button" class="btn ghost" id="cancelForgot">Cancel</button>
+        </form>
+
+      </div>
+    </section>
+
+  </main>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="https://unpkg.com/html5-qrcode"></script>
+</body>
+</html>
+

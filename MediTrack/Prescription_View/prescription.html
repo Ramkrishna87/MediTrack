@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Prescription</title>
+  <link rel="stylesheet" href="prescription.css"/>
+</head>
+
+<body>
+  <article class="prescription paper" id="prescription">
+
+    <header class="pres-header">
+      <div class="hospital">
+        <div class="h-name" id="clinicName">—</div>
+        <div class="h-sub muted" id="clinicAddress">—</div>
+      </div>
+      <div class="doc-meta">
+        <div class="doc-name" id="doc-name">Dr —</div>
+        <div class="pres-meta muted">
+          Date: <span id="pres-date"></span> ·
+          ID: <span id="pres-id"></span>
+        </div>
+      </div>
+    </header>
+
+    <section class="patient-block">
+      <div><strong>Patient:</strong> <span id="pres-patient"></span></div>
+       <div>
+    <strong>Age / Sex:</strong>
+    <span id="pres-age"></span> /
+    <span id="pres-sex"></span>
+  </div>
+      <div><strong>Ref:</strong> OPD</div>
+    </section>
+
+    <section class="meds-block">
+      <table class="med-table">
+        <thead>
+          <tr>
+            <th>Medicine</th>
+            <th>Dosage</th>
+            <th>Duration</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody id="meds-body"></tbody>
+      </table>
+    </section>
+
+    <section class="advice-block">
+      <h4>Advice</h4>
+      <p class="muted" id="pres-advice">—</p>
+    </section>
+
+    <footer class="pres-footer">
+      <div>
+        <img id="qrImage" width="120"/>
+        <div class="generated muted">Scan to verify prescription</div>
+      </div>
+      <button id="editPresBtn" style="display:none">
+      Edit Medicines (Pharmacy)
+  </button>
+      <button id="downloadBtn" style="margin-top:12px">
+      Download Prescription (PDF)
+    </button>
+      <div class="signature">
+        <div class="sig-line">Doctor Signature</div>
+        <div class="sig-name" id="doc-sign"></div>
+      </div>
+    </footer>
+
+  </article>
+
+  <script type="module" src="prescription.js"></script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+.paper{background:#fff;border-radius:10px;padding:20px;max-width:880px;margin:20px auto}
+.pres-header{display:flex;justify-content:space-between;border-bottom:1px solid #eee;padding-bottom:12px}
+.patient-block{display:flex;gap:24px;margin-top:12px}
+.med-table{width:100%;border-collapse:collapse}
+.med-table th,.med-table td{padding:8px;border-bottom:1px solid #eee}
+.pres-footer{display:flex;justify-content:space-between;margin-top:20px}
+.signature{text-align:right}
+.pres-footer button {
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+#downloadBtn {
+  background: #2575fc;
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(37,117,252,0.35);
+}
+
+#downloadBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(37,117,252,0.45);
+}
+
+#editPresBtn {
+  background: #f39c12;
+  color: #fff;
+}
+
+#editPresBtn:hover {
+  background: #e67e22;
+}
+
+@media print {
+  body {
+    background: white;
+  }
+  button {
+    display: none;
+  }
+}

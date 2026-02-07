@@ -3,39 +3,57 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MediTrack</title>
+  <title>MediTrack | Your Healthcare, Simplified</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Navbar -->
-  <header>
-    <h1>MediTrack</h1>
-    <p>Your Healthcare, Simplified</p>
-  </header>
 
-  <!-- Role Selection Section -->
-  <main>
-    <h2>Who are you?</h2>
-    <div class="role-selection">
-      <div class="card">
-        <h3>Doctor</h3>
-        <p>Manage appointments, update patient history, and confirm bookings.</p>
-        <button onclick="goToDoctor()">Continue as Doctor</button>
-      </div>
+<header>
+  <h1><a href="index.html">MediTrack</a></h1>
+  <p>Your Healthcare, Simplified</p>
+</header>
 
-      <div class="card">
-        <h3>Patient</h3>
-        <p>Search doctors, view profiles, and book appointments easily.</p>
-        <button onclick="goToPatient()">Continue as Patient</button>
-      </div>
+<main>
+  <h2 class="fade-in">Who are you?</h2>
+
+  <!-- ✅ WORKING MEDICAL ANIMATION -->
+  <div class="top-animation fade-in-delay">
+    <video 
+      src="assets/animations/medicine%20online.webm"
+      autoplay
+      muted
+      loop
+      playsinline>
+    </video>
+  </div>
+
+  <div class="role-selection">
+
+    <div class="card slide-up">
+      <h3>Doctor</h3>
+      <p>Manage appointments, update patient history, and confirm bookings.</p>
+      <button onclick="goToDoctor()">Continue as Doctor</button>
     </div>
-  </main>
 
-  <!-- Footer -->
-  <footer>
-    <p>© 2025 MediTrack | All Rights Reserved</p>
-  </footer>
+    <div class="card slide-up">
+      <h3>Patient</h3>
+      <p>Search doctors, view profiles, and book appointments easily.</p>
+      <button onclick="goToPatient()">Continue as Patient</button>
+    </div>
 
-  <script src="Script.js"></script>
+    <div class="card slide-up">
+      <h3>Medical Shop</h3>
+      <p>Access prescriptions securely and suggest medication alternatives.</p>
+      <button onclick="goToMedicalShop()">Continue as Pharmacy</button>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <p>&copy; 2025 MediTrack | All Rights Reserved</p>
+</footer>
+
+<script src="Script.js"></script>
 </body>
 </html>

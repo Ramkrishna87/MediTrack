@@ -1,106 +1,304 @@
-// --- REQUIRED FIREBASE IMPORTS ---
-import { auth } from '../Patient_Firebase.js';
-import {
-    onAuthStateChanged,
-    signOut
+/* ========== Patient_Dashboard.js ========== */
+
+// Add these to the top of Patient_Dashboard.js
+import { auth, db } from "../../Firebase/Firebase.js";
+import { 
+    onAuthStateChanged, 
+    signOut 
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
 import {
-    doc,
-    getDoc,
-    collection,
-    getDocs
+  query,
+  where,
+  onSnapshot
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-import { db } from '../Patient_Firebase.js';
+import {
+  doc,
+  getDoc,
+  collection,
+  getDocs,
+  addDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+console.log("Patient_Dashboard.js LOADED");
+
+/* =========================
+   GLOBAL HELPERS 
+========================= */
+function setupReminderListener(patientId) {
+  console.log("Reminder listener not implemented yet for:", patientId);
+}
+
+function hideWelcomeOverlay() {
+  const welcome = document.getElementById('welcome');
+  if (!welcome) return;
+
+  welcome.classList.add('hidden');
+  welcome.setAttribute('aria-hidden', 'true');
+
+  setTimeout(() => {
+    welcome.style.display = 'none';
+  }, 500);
+}
+
 
 let currentPatientId = null;
 let currentPatientData = {};
 
+/* =========================
+   SETTINGS LOGIC
+========================= */
+const settingsName = document.getElementById('settings-name');
+const settingsEmail = document.getElementById('settings-email');
+const saveProfileBtn = document.getElementById('save-profile');
+const settingsDarkToggle = document.getElementById('settings-dark');
 
-// -------------------------
-//  AUTH CHECK + DASHBOARD LOAD
-const $ = (sel, root = document) => root.querySelector(sel);
-const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
-// -------------------------
+/* -------------------------
+   User Verification & Data Initialization
+------------------------- */
 (function checkAuthAndLoad() {
-
     onAuthStateChanged(auth, async (user) => {
+        // const welcome = document.getElementById('welcome');
 
-        const welcome = document.getElementById('welcome');
-        try {
-          if (user) {
-                currentPatientId = user.uid;
-
-                // ---- Load Patient Details ----
-                // const docRef = doc(db, "patients", user.uid);
-                // const docSnap = await getDoc(docRef);
-                alert(document)
-                document.getElementById('display-name').innerText = user.email;
-                document.getElementById('welcome-name').innerText = `Welcome, ${user.email}`;
-                if (docSnap.exists()) {
-                    currentPatientData = docSnap.data();
-
-                    const userName =
-                        currentPatientData.fullName ||
-                        user.email?.split('@')[0] ||
-                        "Patient";
-
-                    alert(userName)
-                }
-
-                // ---- Load Dashboard Items ----
-                if (typeof loadDashboardData === "function") {
-                    await loadDashboardData(user.uid);
-                } else {
-                    console.warn("loadDashboardData() is missing!");
-                }
-
-            } else {
-                // Not logged in → Redirect to login
-                window.location.href = "../Patient_Login_Page/Patient_Login_Page.html";
-                return; // stop further execution
+       // User is NOT logged in: redirect them back to the login page 
+         if (!user) {
+      window.location.href = './Patient_Login_Page.html';
+      return;
+    }
+            currentPatientId = user.uid;
+            
+            // 1. Load Patient Profile from Firestore
+            const docSnap = await getDoc(doc(db, "patients", user.uid));
+            if (docSnap.exists()) {
+                currentPatientData = docSnap.data();
+               
+                // Use full name, fallback to email prefix if needed
+                const userName = currentPatientData.fullName || user.email.split('@')[0];
+                // Update UI placeholders
+                document.getElementById('display-name').innerText = userName;
+                document.getElementById('welcome-name').innerText = `Welcome, ${userName}`;
+                 loadSettings();
             }
 
-        } catch (error) {
-            console.error("Auth/Dashboard Error:", error);
-            alert("An error occurred loading your dashboard. Check console.");
-        }
-
-        // ---- Hide welcome overlay ----
-        if (welcome) welcome.classList.add('hidden');
+            // 2. Load all dynamic data (Doctors, Reminders, Reports)
+            loadPatientPrescriptions(user.uid);
+            loadPatientDashboardStats(user.uid);
+            await loadDashboardData(user.uid);
+            //  hide welcome AFTER data is ready
+             hideWelcomeOverlay(); 
     });
-
 })();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ========== Patient_Dashboard.js ========== */
-alert("HID")
 /* -------------------------
    Util / DOM helpers
    ------------------------- */
+const $ = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+
+let doctorsDataset = [];
+
+/* UI-only mock doctors */
+const mockDoctors = [
+  {
+    id: "mock-sharma",
+    name: "Dr. Sharma",
+    spec: "Cardiologist",
+    avail: "Demo · UI only",
+    number: "+910000000000",
+    isMock: true
+  }
+];
+
+const searchBtn = document.getElementById('search-btn');
+const docSearch = document.getElementById('doc-search');
+const searchResults = document.getElementById('search-results');
+
+function renderSearchResults(list) {
+  if (!searchResults) return;
+  searchResults.innerHTML = '';
+  list.forEach(d => {
+    const art = document.createElement('article');
+    art.className = 'doctor-card flippable';
+
+art.dataset.doctor = d.name;
+art.dataset.number = d.number || '';
+art.dataset.specialty = d.spec;
+art.dataset.doctorId = d.id;   
+
+
+    art.innerHTML = `
+      <div class="card-inner" style="height:150px;display:flex;align-items:center;gap:12px;padding:12px">
+        <div style="width:64px;height:64px;border-radius:10px;background:linear-gradient(135deg,var(--accent-2),var(--accent-1));display:flex;align-items:center;justify-content:center;color:#fff;">
+          ${d.name.split(' ').map(n=>n[0]).slice(0,2).join('')}
+        </div>
+        <div style="flex:1">
+          <div style="font-weight:700">${d.name}</div>
+          <div class="muted">${d.spec} · ${d.avail}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+       <input type="date" class="appt-date" />
+<select class="appt-time">
+  <option value="">Select Time</option>
+  <option value="09:00">09:00 AM</option>
+  <option value="10:00">10:00 AM</option>
+  <option value="11:00">11:00 AM</option>
+  <option value="12:00">12:00 PM</option>
+  <option value="14:00">02:00 PM</option>
+  <option value="15:00">03:00 PM</option>
+  <option value="16:00">04:00 PM</option>
+</select>
+<button 
+  class="btn small book-btn" 
+  ${d.isMock ? "disabled" : ""}
+>
+  ${d.isMock ? "Demo Only" : "Book"}
+</button>
+          <button class="btn small ghost open-wachat" data-number="${d.number}" data-doc="${d.name}">WhatsApp</button>
+        </div>
+      </div>
+    `;
+    searchResults.appendChild(art);
+  });
+
+  $$('.open-wachat').forEach(b => {
+    b.addEventListener('click', () => {
+      const num = b.dataset.number;
+      const doc = b.dataset.doc;
+      // open wa link
+      const waUrl = `https://wa.me/${encodeURIComponent(num.replace(/[^+\d]/g,''))}?text=${encodeURIComponent('Hello '+doc+', I am your patient.')}`;
+      // open in new tab and also show QR (for scanning)
+      window.open(waUrl, '_blank');
+      // show QR in reports area temporarily
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(waUrl)}`;
+      showSuccessModal(`WhatsApp opened for ${doc}. (You can also scan the QR that was generated.)`);
+      // optionally show QR in chat area
+      renderChatList(); // ensure chat list available
+    });
+  });
+}
+
+if (searchBtn) {
+  searchBtn.addEventListener('click', () => {
+    const q = (docSearch.value || '').toLowerCase().trim();
+    const res = doctorsDataset.filter(d => d.name.toLowerCase().includes(q) || d.spec.toLowerCase().includes(q));
+    renderSearchResults(res.length ? res : doctorsDataset);
+  });
+}
+
+// Add this helper function to Patient_Dashboard.js
+async function loadDashboardData(patientId) {
+  console.log(`Loading data for patient: ${patientId}`);
+
+  const doctorsCol = collection(db, "doctors");
+  const doctorSnapshot = await getDocs(doctorsCol);
+
+  const realDoctors = doctorSnapshot.docs.map(d => ({
+    id: d.id,
+    name: d.data().fullName || "Dr. Demo Doctor",
+    spec: d.data().specialty || "General Physician",
+    avail: d.data().availability || "Mon–Fri · 10:00–17:00",
+    number: d.data().phone || "",
+    isMock: false
+  }));
+
+  const primaryDoctor = realDoctors.slice(0, 1);
+
+  doctorsDataset = [...primaryDoctor, ...mockDoctors];
+
+  // ✅ CRITICAL RENDERS
+  renderDashboardDoctors(doctorsDataset);
+  renderSearchResults(doctorsDataset);
+
+  setupReminderListener(patientId);
+}
+
+function renderDashboardDoctors(list) {
+  const grid = document.getElementById('dashboard-doctors');
+  if (!grid) return;
+
+  grid.innerHTML = '';
+
+  list.forEach(d => {
+    const card = document.createElement('article');
+    card.className = 'doctor-card flippable';
+    card.dataset.doctor = d.name;
+    card.dataset.specialty = d.spec;
+    card.dataset.number = d.number || '';
+    card.dataset.disease = '—';
+    card.dataset.doctorId = d.id;   
+
+    card.innerHTML = `
+      <div class="card-inner">
+        <div class="card-front">
+          <div class="doctor-thumb">
+            <video class="small-anim" autoplay loop muted playsinline>
+              <source src="../assets/animations/Doctor_animated.mp4" type="video/mp4" />
+            </video>
+          </div>
+
+          <div class="front-meta">
+            <h3 class="doctor-name">${d.name}</h3>
+            <p class="doctor-specialty">${d.spec}</p>
+            <p class="doctor-brief muted">${d.avail}</p>
+
+            <div class="doctor-actions">
+              <button class="flip-btn">View Details</button>
+              ${
+                d.isMock
+                  ? `<button class="prescribe-btn" disabled>Demo Only</button>`
+                  : `<button class="prescribe-btn">View Prescriptions</button>`
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="card-back">
+          <h3>${d.name}</h3>
+          <p class="muted">${d.spec}</p>
+
+          <div class="book-section">
+            <label>Book appointment:</label>
+            <div class="book-controls">
+              <input type="date" class="appt-date" />
+<select class="appt-time">
+  <option value="">Select Time</option>
+  <option value="09:00">09:00 AM</option>
+  <option value="10:00">10:00 AM</option>
+  <option value="11:00">11:00 AM</option>
+  <option value="12:00">12:00 PM</option>
+  <option value="14:00">02:00 PM</option>
+  <option value="15:00">03:00 PM</option>
+  <option value="16:00">04:00 PM</option>
+</select>
+<button class="book-btn">Book</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    grid.appendChild(card);
+  });
+}
+
+// 4. Implement the Logout button listener
+const logoutBtn = document.getElementById('logout-btn');
+
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', async () => {
+        try {
+            await signOut(auth);
+            // signOut triggers onAuthStateChanged(user=null), which redirects
+        } catch (error) {
+            console.error("Logout failed:", error);
+            alert("Logout failed. Please try again.");
+        }
+    });
+}
+
 
 /* -------------------------
    Sidebar routing
@@ -119,12 +317,51 @@ $$('.nav-item').forEach(btn => {
     const main = $('#main-content');
     if (main) main.focus();
 
-    if (view === 'prescriptions') populatePrescriptionSample();
+    if (view === 'prescriptions') {
+  loadPatientPrescriptions(currentPatientId);
+}
     if (view === 'reports') renderReports();
     if (view === 'payments') renderPayments();
     if (view === 'chat') renderChatList();
+    if (view === 'appointments') renderSearchResults(doctorsDataset);
   });
 });
+
+/* =========================
+   Dashboard Quick Actions
+========================= */
+const openAppointmentsBtn = document.getElementById('open-appointments');
+const openPrescriptionsBtn = document.getElementById('open-prescriptions');
+
+function switchView(viewName) {
+  // sidebar active state
+  $$('.nav-item').forEach(b => b.classList.remove('active'));
+  const navBtn = document.querySelector(`.nav-item[data-view="${viewName}"]`);
+  if (navBtn) navBtn.classList.add('active');
+
+  // views
+  $$('.view').forEach(v => v.classList.remove('active-view'));
+  const viewEl = document.getElementById(`view-${viewName}`);
+  if (viewEl) viewEl.classList.add('active-view');
+
+  // accessibility focus
+  const main = document.getElementById('main-content');
+  if (main) main.focus();
+}
+
+if (openAppointmentsBtn) {
+  openAppointmentsBtn.addEventListener('click', () => {
+    switchView('appointments');
+  });
+}
+
+if (openPrescriptionsBtn) {
+  openPrescriptionsBtn.addEventListener('click', () => {
+    switchView('prescriptions');
+    populatePrescriptionSample(); // keep existing logic
+  });
+}
+
 
 /* -------------------------
    Theme toggle (unchanged)
@@ -140,159 +377,277 @@ if (themeToggle) {
 }
 
 /* -------------------------
-   Welcome overlay - robust
-   Waits for video to be ready or times out (max 2s)
-   ------------------------- */
-(function hideWelcomeRobustly() {
-  const welcome = document.getElementById('welcome');
-  const vid = document.getElementById('welcome-anim');
-  const displayName = document.getElementById('display-name');
-  const welcomeName = document.getElementById('welcome-name');
-  const userName = 'Patient Name'; // placeholder
-  if (displayName) displayName.innerText = userName;
-  if (welcomeName) welcomeName.innerText = `Welcome, ${userName}`;
+   Flip cards & right drawer (DYNAMIC)
+------------------------- */
 
-  let done = false;
-  function hideNow(){
-    if (done || !welcome) return;
-    done = true;
-    welcome.classList.add('hidden');
-    welcome.setAttribute('aria-hidden', 'true');
-    setTimeout(()=> { if (welcome) welcome.style.display = 'none'; }, 520);
-  }
-
-  if (vid) {
-    // if video canplay quickly -> hide
-    if (vid.readyState >= 3) hideNow();
-    else {
-      const onCan = () => { vid.removeEventListener('canplay', onCan); hideNow(); };
-      vid.addEventListener('canplay', onCan);
-    }
-  }
-  // fallback
-  setTimeout(hideNow, 2000);
-})();
-
-/* -------------------------
-   Flip cards & right drawer
-   ------------------------- */
-const flippableCards = $$('.doctor-card.flippable');
 const rightDrawer = document.getElementById('right-drawer');
 const drawerClose = document.getElementById('drawer-close');
 
-flippableCards.forEach(card => {
-  const flipBtn = card.querySelector('.flip-btn');
-  if (!flipBtn) return;
-  flipBtn.addEventListener('click', () => {
-    // unflip others
-    $$('.doctor-card.flipped').forEach(c => { if (c !== card) c.classList.remove('flipped'); });
-    card.classList.toggle('flipped');
+document.addEventListener('click', (e) => {
+  if (!e.target.classList.contains('flip-btn')) return;
 
-    // populate and show drawer
-    const doc = card.getAttribute('data-doctor') || 'Doctor';
-    const spec = card.getAttribute('data-specialty') || '';
-    const disease = card.getAttribute('data-disease') || '';
-    const number = card.getAttribute('data-number') || '';
-    $('#drawer-doctor-name').innerText = doc;
-    $('#drawer-specialty').innerText = spec;
-    $('#drawer-disease').innerText = disease;
-    // show drawer
-    if (rightDrawer) { rightDrawer.classList.add('visible'); rightDrawer.setAttribute('aria-hidden','false'); }
-    // set whatsapp action
-    const waBtn = $('#drawer-whatsapp');
-    if (waBtn) {
-      waBtn.onclick = () => {
-        if (number) {
-          const url = `https://wa.me/${encodeURIComponent(number.replace(/[^+\d]/g,''))}`;
-          window.open(url, '_blank');
-        } else alert('Doctor contact not available');
-      };
-    }
+  const card = e.target.closest('.doctor-card');
+  if (!card) return;
+
+
+  // unflip others
+  $$('.doctor-card.flipped').forEach(c => {
+    if (c !== card) c.classList.remove('flipped');
   });
-});
 
-if (drawerClose) drawerClose.addEventListener('click', () => {
-  if (rightDrawer) { rightDrawer.classList.remove('visible'); rightDrawer.setAttribute('aria-hidden','true'); }
-  $$('.doctor-card.flipped').forEach(c => c.classList.remove('flipped'));
+  card.classList.toggle('flipped');
+
+  const doc = card.dataset.doctor || 'Doctor';
+  const spec = card.dataset.specialty || '';
+  const number = card.dataset.number || '';
+
+  $('#drawer-doctor-name').innerText = doc;
+  $('#drawer-specialty').innerText = spec;
+  $('#drawer-disease').innerText = '—';
+
+  if (rightDrawer) {
+    rightDrawer.classList.add('visible');
+    rightDrawer.setAttribute('aria-hidden','false');
+  }
+
+  const waBtn = $('#drawer-whatsapp');
+  if (waBtn) {
+    waBtn.onclick = () => {
+      if (!number) return alert('Doctor contact not available');
+      window.open(`https://wa.me/${number.replace(/[^+\d]/g,'')}`, '_blank');
+    };
+  }
 });
 
 /* booking inside card */
-document.addEventListener('click', (e) => {
-  if (e.target && e.target.classList.contains('book-btn')) {
-    const input = e.target.closest('.card-back').querySelector('.appt-input');
-    if (input && input.value) {
-      showSuccessModal(`Appointment booked for ${new Date(input.value).toLocaleString()}`);
-    } else {
-      alert('Please choose a time before booking.');
-    }
+document.addEventListener('click', async (e) => {
+  if (!e.target.classList.contains('book-btn')) return;
+
+  const card = e.target.closest('.doctor-card');
+  if (!card) return;
+
+  const doctorName = card.dataset.doctor;
+  if (!doctorName) {
+    alert("Doctor information missing. Please refresh the page.");
+    return;
+  }
+
+  const doctorId = card.dataset.doctorId;
+  if (!doctorId) {
+    alert("Doctor ID missing. Please refresh the page.");
+    console.error("❌ doctorId missing on card:", card);
+    return;
+  }
+
+  const dateInput = card.querySelector('.appt-date');
+  const timeSelect = card.querySelector('.appt-time');
+
+  if (!dateInput || !timeSelect || !dateInput.value || !timeSelect.value) {
+    alert("Please select date and time");
+    return;
+  }
+
+  console.log("BOOKING WITH:");
+  console.log("doctorId (dataset):", card.dataset.doctorId);
+  console.log("doctorName:", card.dataset.doctor);
+  console.log("currentPatientId:", currentPatientId);
+
+  const appointmentData = {
+    patientId: currentPatientId,
+    patientName: currentPatientData.fullName || "Patient",
+    doctorId: doctorId,
+    doctorName: doctorName,
+    doctorPhone: card.dataset.number || "",
+    date: dateInput.value,
+    time: timeSelect.value,
+    status: "pending",
+    createdAt: serverTimestamp()
+  };
+
+  try {
+    await addDoc(collection(db, "appointments"), appointmentData);
+    showSuccessModal(
+      `Appointment booked on ${appointmentData.date} at ${appointmentData.time}`
+    );
+    dateInput.value = "";
+    timeSelect.value = "";
+  } catch (err) {
+    console.error("BOOK ERROR:", err);
+    alert(err.message);
   }
 });
 
 /* prescribe button open prescription view */
-$$('.prescribe-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    $$('.nav-item').forEach(b => b.classList.remove('active'));
-    const presNav = document.querySelector('.nav-item[data-view="prescriptions"]');
-    if (presNav) presNav.classList.add('active');
-    $$('.view').forEach(v => v.classList.remove('active-view'));
-    const presView = document.getElementById('view-prescriptions');
-    if (presView) presView.classList.add('active-view');
+function loadPatientPrescriptions(patientId) {
+  if (!patientId) return;
 
-    const patientName = btn.getAttribute('data-patient') || 'Patient Name';
-    const presPatient = document.getElementById('pres-patient');
-    const presDate = document.getElementById('pres-date');
-    if (presPatient) presPatient.innerText = patientName;
-    if (presDate) presDate.innerText = new Date().toLocaleDateString();
+  const historyEl = document.getElementById('pres-history');
+  const tbody = document.getElementById('meds-body');
+
+  const q = query(
+    collection(db, "prescriptions"),
+    where("patientId", "==", patientId)
+  );
+
+  onSnapshot(q, snap => {
+    historyEl.innerHTML = '';
+    tbody.innerHTML = '';
+
+    if (snap.empty) {
+      historyEl.innerHTML = `<div class="muted">No prescriptions yet</div>`;
+      return;
+    }
+
+    // Sort newest → oldest
+    const docs = snap.docs.sort(
+      (a, b) =>
+        (b.data().createdAt?.seconds || 0) -
+        (a.data().createdAt?.seconds || 0)
+    );
+
+    // 1️⃣ RENDER HISTORY LIST
+    docs.forEach((d, idx) => {
+      const p = d.data();
+      const card = document.createElement('div');
+      card.className = 'card small';
+
+      card.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <strong>${p.doctorName || 'Doctor'}</strong><br/>
+            <span class="muted">
+              ${p.createdAt?.toDate?.().toLocaleDateString() || ''}
+            </span>
+          </div>
+          <button class="btn small ghost" data-id="${d.id}">
+            View
+          </button>
+        </div>
+      `;
+
+      card.querySelector('button').onclick = () => {
+        renderPrescriptionDetails(d.id, p);
+      };
+
+      historyEl.appendChild(card);
+
+      // Auto-open latest prescription
+      if (idx === 0) {
+        renderPrescriptionDetails(d.id, p);
+      }
+    });
   });
-});
-
-/* populate prescription sample/back */
-function populatePrescriptionSample(){
-  const presPatient = document.getElementById('pres-patient');
-  const presDate = document.getElementById('pres-date');
-  const presId = document.getElementById('pres-id');
-  if (presPatient) presPatient.innerText = 'Patient Name';
-  if (presDate) presDate.innerText = new Date().toLocaleDateString();
-  if (presId) presId.innerText = '#0001';
 }
 
-const presBack = document.getElementById('pres-back');
-if (presBack) presBack.addEventListener('click', () => {
-  $$('.view').forEach(v => v.classList.remove('active-view'));
-  const dash = document.getElementById('view-dashboard'); if (dash) dash.classList.add('active-view');
-  $$('.nav-item').forEach(b => b.classList.remove('active'));
-  const navDash = document.querySelector('.nav-item[data-view="dashboard"]'); if (navDash) navDash.classList.add('active');
-});
+function renderPrescriptionDetails(id, p) {
+  const tbody = document.getElementById('meds-body');
+  const qrImg = document.getElementById('pres-qr');
 
-/* print/download flows (prescription not heavily changed) */
-const printBtn = document.getElementById('print-pres');
-if (printBtn) {
-  printBtn.addEventListener('click', () => {
-    const presEl = document.getElementById('prescription');
-    if (!presEl) return;
-    const w = window.open('', '', 'height=700,width=900');
-    w.document.write('<html><head><title>Print Prescription</title>');
-    w.document.write('<style>body{font-family:Inter,Arial,sans-serif;padding:20px;color:#222}.paper{background:#fff;padding:18px;border-radius:6px}</style>');
-    w.document.write('</head><body>');
-    w.document.write(presEl.outerHTML);
-    w.document.write('</body></html>');
-    w.document.close();
-    w.focus();
-    setTimeout(() => {
-      w.print();
-      createDownloadablePrescription(presEl);
-    }, 500);
+  // Header
+  document.querySelector('.doc-name').innerText = p.doctorName || 'Doctor';
+  document.getElementById('pres-date').innerText =
+    p.createdAt?.toDate?.().toLocaleDateString() || '';
+  document.getElementById('pres-patient').innerText = p.patientName || '';
+  document.getElementById('pres-id').innerText = id;
+  document.getElementById('pres-age').innerText =
+    `${p.patientAge || '--'} / ${p.patientSex || '--'}`;
+
+  // QR (patient CAN see it)
+  if (qrImg && p.qr) {
+    qrImg.src = p.qr;
+    qrImg.style.display = 'block';
+  }
+
+  // Medicines
+  tbody.innerHTML = '';
+  (p.medicines || []).forEach(line => {
+    const [name, dose, freq, duration] = line.split('|').map(s => s.trim());
+    tbody.innerHTML += `
+      <tr>
+        <td>${name}</td>
+        <td>${dose || ''}</td>
+        <td>${duration || ''}</td>
+        <td>${freq || ''}</td>
+      </tr>
+    `;
   });
 }
-function createDownloadablePrescription(el) {
-  const blob = new Blob([`<html><head><meta charset="utf-8"><title>Prescription</title></head><body>${el.outerHTML}</body></html>`], {type: 'text/html'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `prescription-${Date.now()}.html`;
-  a.click();
-  URL.revokeObjectURL(url);
+
+// document.addEventListener('click', (e) => {
+//   if (!e.target.classList.contains('prescribe-btn') || e.target.disabled) return;
+
+//   const card = e.target.closest('.doctor-card');
+//   const doctorName = card?.dataset.doctor || 'Doctor';
+
+//   switchView('prescriptions');
+
+//   document.getElementById('pres-patient').innerText =
+//     currentPatientData.fullName || 'Patient';
+
+//   document.getElementById('pres-date').innerText =
+//     new Date().toLocaleDateString();
+
+//   showSuccessModal(`Showing prescriptions from ${doctorName}`);
+// });
+
+
+/* drawer close */
+if (drawerClose) {
+  drawerClose.addEventListener('click', () => {
+    if (rightDrawer) {
+      rightDrawer.classList.remove('visible');
+      rightDrawer.setAttribute('aria-hidden','true');
+    }
+    $$('.doctor-card.flipped').forEach(c => c.classList.remove('flipped'));
+  });
 }
+
+const drawerBook = document.getElementById('drawer-book');
+const drawerPrescribe = document.getElementById('drawer-prescribe');
+
+if (drawerBook) {
+  drawerBook.addEventListener('click', () => {
+    switchView('appointments');
+  });
+}
+
+if (drawerPrescribe) {
+  drawerPrescribe.addEventListener('click', () => {
+    switchView('prescriptions');
+  });
+}
+
+
+function loadPatientDashboardStats(patientId) {
+  // Appointments
+  onSnapshot(
+    query(
+      collection(db, "appointments"),
+      where("patientId", "==", patientId),
+      where("status", "in", ["pending", "confirmed"])
+    ),
+    snap => {
+      document.getElementById('stat-upcoming').innerText =
+        `${snap.size} Appointments`;
+    }
+  );
+
+  // Prescriptions
+  onSnapshot(
+    query(
+      collection(db, "prescriptions"),
+      where("patientId", "==", patientId)
+    ),
+    snap => {
+      document.getElementById('stat-pres').innerText =
+        `${snap.size} Prescriptions`;
+    }
+  );
+
+  // Reports (for now mock count)
+  document.getElementById('stat-reports').innerText = `1 Report`;
+}
+
 
 /* success modal helper */
 function showSuccessModal(text) {
@@ -307,6 +662,7 @@ if (modalOk) modalOk.addEventListener('click', () => {
   const modal = document.getElementById('success-modal');
   if (modal) modal.classList.add('hidden');
 });
+
 
 /* small hover tilt */
 $$('.hover-tilt').forEach(el => {
@@ -358,7 +714,7 @@ function renderMedList() {
   medListEl.innerHTML = '';
   reminders.forEach((r, idx) => {
     const animFile = medAnimations[idx % medAnimations.length];
-    const animSrc = `assets/animations/${encodeURIComponent(animFile)}`;
+    const animSrc = `../assets/animations/${encodeURIComponent(animFile)}`;
     const div = document.createElement('div');
     div.className = 'med-item';
     div.dataset.id = r.id;
@@ -501,79 +857,8 @@ if (openAddBtn) {
   });
 }
 
-/* =================================================
-   APPOINTMENT SEARCH (mock)
-   - search uses mock dataset and displays results
-   - includes "Book" and "WhatsApp QR" generation
-   ================================================= */
-const doctorsDataset = [
-  { name: 'Dr. Sharma', spec: 'Cardiology', avail: 'Mon, Wed 10:00-13:00', number: '+919000000001' },
-  { name: 'Dr. Mehta', spec: 'Neurology', avail: 'Tue, Thu 14:00-17:00', number: '+919000000002' },
-  { name: 'Dr. Kapoor', spec: 'Orthopedics', avail: 'Fri 09:00-12:00', number: '+919000000003' }
-];
 
-const searchBtn = document.getElementById('search-btn');
-const docSearch = document.getElementById('doc-search');
-const searchResults = document.getElementById('search-results');
 
-function renderSearchResults(list) {
-  if (!searchResults) return;
-  searchResults.innerHTML = '';
-  list.forEach(d => {
-    const art = document.createElement('article');
-    art.className = 'doctor-card flippable';
-    art.innerHTML = `
-      <div class="card-inner" style="height:150px;display:flex;align-items:center;gap:12px;padding:12px">
-        <div style="width:64px;height:64px;border-radius:10px;background:linear-gradient(135deg,var(--accent-2),var(--accent-1));display:flex;align-items:center;justify-content:center;color:#fff;">
-          ${d.name.split(' ').map(n=>n[0]).slice(0,2).join('')}
-        </div>
-        <div style="flex:1">
-          <div style="font-weight:700">${d.name}</div>
-          <div class="muted">${d.spec} · ${d.avail}</div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:8px;">
-          <button class="btn small book-now" data-doc="${d.name}">Book</button>
-          <button class="btn small ghost open-wachat" data-number="${d.number}" data-doc="${d.name}">WhatsApp</button>
-        </div>
-      </div>
-    `;
-    searchResults.appendChild(art);
-  });
-
-  // attach actions
-  $$('.book-now').forEach(b => {
-    b.addEventListener('click', (e) => {
-      const doc = b.dataset.doc;
-      const time = prompt(`Book appointment with ${doc}\nEnter date & time (YYYY-MM-DD HH:MM)`, '');
-      if (time) showSuccessModal(`Booked ${doc} at ${time} (mock)`);
-    });
-  });
-  $$('.open-wachat').forEach(b => {
-    b.addEventListener('click', () => {
-      const num = b.dataset.number;
-      const doc = b.dataset.doc;
-      // open wa link
-      const waUrl = `https://wa.me/${encodeURIComponent(num.replace(/[^+\d]/g,''))}?text=${encodeURIComponent('Hello '+doc+', I am your patient.')}`;
-      // open in new tab and also show QR (for scanning)
-      window.open(waUrl, '_blank');
-      // show QR in reports area temporarily
-      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(waUrl)}`;
-      showSuccessModal(`WhatsApp opened for ${doc}. (You can also scan the QR that was generated.)`);
-      // optionally show QR in chat area
-      renderChatList(); // ensure chat list available
-    });
-  });
-}
-
-if (searchBtn) {
-  searchBtn.addEventListener('click', () => {
-    const q = (docSearch.value || '').toLowerCase().trim();
-    const res = doctorsDataset.filter(d => d.name.toLowerCase().includes(q) || d.spec.toLowerCase().includes(q));
-    renderSearchResults(res.length ? res : doctorsDataset);
-  });
-}
-/* run default */
-renderSearchResults(doctorsDataset);
 
 /* =================================================
    REPORTS (mock)
@@ -651,7 +936,9 @@ function renderChatList() {
   const container = document.getElementById('chat-grid');
   if (!container) return;
   container.innerHTML = '';
+
   doctorsDataset.forEach(d => {
+    if (d.isMock) return; // ADD THIS LINE
     const waUrl = `https://wa.me/${encodeURIComponent(d.number.replace(/[^+\d]/g,''))}?text=${encodeURIComponent('Hello '+d.name+', I am your patient regarding my appointment.')}`;
     const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(waUrl)}`;
     const card = document.createElement('div');
@@ -674,7 +961,61 @@ function renderChatList() {
 /* initial renders */
 renderReports();
 renderPayments();
-renderChatList();
+// renderChatList();
+
+
+
+/* Populate settings when patient loads */
+function loadSettings() {
+  if (!currentPatientData) return;
+
+  if (settingsName) settingsName.value = currentPatientData.fullName || '';
+  if (settingsEmail) settingsEmail.value = currentPatientData.email || '';
+
+  if (settingsDarkToggle) {
+    settingsDarkToggle.checked = document.body.classList.contains('dark-mode');
+  }
+}
+
+/* Save profile */
+if (saveProfileBtn) {
+  saveProfileBtn.addEventListener('click', async () => {
+    const newName = settingsName.value.trim();
+    if (!newName) {
+      alert("Name cannot be empty");
+      return;
+    }
+
+    try {
+      const { updateDoc, doc } = await import(
+        "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js"
+      );
+
+      await updateDoc(doc(db, "patients", currentPatientId), {
+        fullName: newName
+      });
+
+      document.getElementById('display-name').innerText = newName;
+      document.getElementById('welcome-name').innerText = `Welcome, ${newName}`;
+      document.querySelector('.sidebar-footer .user').innerText = newName;
+
+      currentPatientData.fullName = newName;
+
+      showSuccessModal("Profile updated successfully");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to save profile");
+    }
+  });
+}
+
+/* Dark mode toggle */
+if (settingsDarkToggle) {
+  settingsDarkToggle.addEventListener('change', () => {
+    document.body.classList.toggle('dark-mode', settingsDarkToggle.checked);
+  });
+}
+
 
 /* expose reminders for debugging */
 window.remindersData = reminders;

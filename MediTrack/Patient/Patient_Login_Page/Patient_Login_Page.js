@@ -31,13 +31,13 @@ const toast = (msg, t = 2000) => {
 
 /* Replace with your own firebaseConfig if needed */
 const firebaseConfig = {
-  apiKey: "AIzaSyBN7f6nmjr4xg3mW4e0X5E_loNVlXvmpWs",
-  authDomain: "meditrack-1a325.firebaseapp.com",
-  projectId: "meditrack-1a325",
-  storageBucket: "meditrack-1a325.firebasestorage.app",
-  messagingSenderId: "203548219971",
-  appId: "1:203548219971:web:aad75f729aa5d4f1eb92f6",
-  measurementId: "G-3XWDM6VHS4"
+  apiKey: "AIzaSyBuIibcaDVQITxabmh7ZkrVAp9uvCjzfw0",
+  authDomain: "meditrack-5cc0c.firebaseapp.com",
+  projectId: "meditrack-5cc0c",
+  storageBucket: "meditrack-5cc0c.firebasestorage.app",
+  messagingSenderId: "502198602638",
+  appId: "1:502198602638:web:0a189d9dfba9cc17adb2df",
+  measurementId: "G-D4FE4D2PJE"
 };
 
 async function loadFirebase() {
