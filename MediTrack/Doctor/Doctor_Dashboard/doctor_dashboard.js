@@ -82,13 +82,16 @@ function loadNotificationHistory() {
     id: n.prescriptionId,
     type: "pharmacy",
     title: "Pharmacy Alternative Request",
-    body: `${n.message} (ID: ${n.id.slice(0,6)})`
+    body: `${n.message || ''} ${
+    n.id ? `(ID: ${n.id.slice(0,6)})` : ''
+    }`
   });
 });
     renderNotifications();
   });
 }
 function notifExists(id) {
+  if (!id) return false;
   return window.__mock.notifications.some(n => n.id === id);
 }
 
