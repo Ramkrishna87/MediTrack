@@ -105,7 +105,7 @@ document.getElementById("doctorLoginForm").addEventListener("submit", async (e) 
     alert("Login Successful!");
 
     // Redirect to your Doctor Dashboard
-    window.location.href = "../Doctor_Dashboard/Doctor_Dashboard.html";
+    window.location.href = "../Doctor_Dashboard/doctor_dashboard.html";
 
   } catch (error) {
     console.error("Login Error:", error.message);
